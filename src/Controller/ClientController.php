@@ -13,9 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class ClientController extends AbstractController
 {
     #[Route('/client', name: 'app_client')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
-        return $this->render('client/index.html.twig', []);
+        $clients = $entityManager->getRepository(Client::class)->findAll();
+        return $this->render('client/index.html.twig', ['clients' => $clients]);
     }
 
     #[Route('/client/new', name: 'app_client_new', methods: ['GET', 'POST'])]
