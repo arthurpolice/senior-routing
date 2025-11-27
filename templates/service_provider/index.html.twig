@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Service Providers{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-slate-100 py-16">
+        <section class="mx-auto w-full max-w-5xl rounded-2xl bg-white p-10 shadow-xl ring-1 ring-slate-200">
+            <header class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm uppercase tracking-[0.3em] text-slate-400">Service Providers</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">Overview</h1>
+                    <p class="mt-1 text-sm text-slate-500">Browse existing providers or create a new one.</p>
+                </div>
+                <a
+                    href="{{ path('app_service_provider_new') }}"
+                    class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-slate-900/30 transition hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                >
+                    + New provider
+                </a>
+            </header>
+
+            {% if serviceProviders is empty %}
+                <p class="rounded-xl border border-dashed border-slate-300 px-6 py-10 text-center text-slate-500">
+                    No service providers yet. Be the first to
+                    <a href="{{ path('app_service_provider_new') }}" class="font-semibold text-slate-900 underline decoration-slate-300 decoration-2 hover:decoration-slate-500">
+                        create one
+                    </a>.
+                </p>
+            {% else %}
+                <ul class="grid gap-6 md:grid-cols-2">
+                    {% for provider in serviceProviders %}
+                        <li class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Provider #{{ provider.id }}</p>
+                                    <a href="{{ path('app_service_provider_show', {'id': provider.id}) }}" class="mt-2 text-xl font-semibold text-slate-900">{{ provider.name ?? 'Unnamed provider' }}</a>
+                                </div>
+                            </div>
+                            <dl class="mt-4 space-y-1 text-sm text-slate-600">
+                                <div class="flex justify-between">
+                                    <dt class="font-medium text-slate-500">Address</dt>
+                                    <dd class="text-right text-slate-800">{{ provider.address ?? '—' }}</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="font-medium text-slate-500">City</dt>
+                                    <dd class="text-right text-slate-800">{{ provider.city ?? '—' }}</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="font-medium text-slate-500">Country</dt>
+                                    <dd class="text-right text-slate-800">{{ provider.country ?? '—' }}</dd>
+                                </div>
+                            </dl>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+    </main>
+{% endblock %}
+
