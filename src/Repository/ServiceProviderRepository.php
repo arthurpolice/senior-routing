@@ -16,6 +16,27 @@ class ServiceProviderRepository extends ServiceEntityRepository
         parent::__construct($registry, ServiceProvider::class);
     }
 
+    public function findDeliveriesWithClientsForDate(
+        ServiceProvider $provider,
+        \DateTimeImmutable $date,
+        int $windowDays = 2
+    ): array {
+        $windowStart = (clone $date)->setTime(0, 0);
+        $windowEnd   = (clone $date)->modify(\sprintf('+%d day', $windowDays))->setTime(23, 59, 59);
+    
+        return $this->createQueryBuilder('sp')
+            ->select('o', 'client')
+            ->join('sp.orders', 'o')
+            ->join('o.client', 'client')
+            ->andWhere('sp = :provider')
+            ->andWhere('o.date BETWEEN :start AND :end')
+            ->setParameter('provider', $provider)
+            ->setParameter('start', $windowStart)
+            ->setParameter('end', $windowEnd)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return ServiceProvider[] Returns an array of ServiceProvider objects
     //     */

@@ -6,6 +6,7 @@ use App\Repository\ServiceProviderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Enum\WeekDays;
 
 #[ORM\Entity(repositoryClass: ServiceProviderRepository::class)]
 class ServiceProvider
@@ -91,17 +92,14 @@ class ServiceProvider
         return $this;
     }
 
-    public function getRouteAddresses(?\DateTimeInterface $date): array
+    public function getFullAddress(): string
     {
-        $orders = $this->orders->toArray();
-        $todaysDeliveries = array_filter($orders, static function(Order $order) use ($date): bool {
-            $orderDate = $order->getDate();
-            $dayDiff = $orderDate->diff($date)->days;
-            $isWithinWindow = $dayDiff <= 2 && $orderDate >= $date;
-            $isClientAvailable = \in_array($date->format('l'), $order->getClient()->getSchedule(), true);
-            return $isWithinWindow && $isClientAvailable;
-        });
-        return array_map(static fn(Order $order): string => $order->getClient()->getAddress(), $todaysDeliveries);
+        return "{$this->address}, {$this->city}, {$this->country}";
+    }
+
+    public function getOrders(): Collection
+    {
+        return $this->orders;
     }
 
     public function getClients(): Collection

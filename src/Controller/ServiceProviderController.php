@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ServiceProvider;
 use App\Form\NewServiceProviderFormType;
-use App\Service\Routes\ServiceProviderRoutePlanner;
+use App\Service\RoutePlanner\RoutePlanner;
 use App\Dto\RouteRequestDto;
 
 class ServiceProviderController extends AbstractController
@@ -47,14 +47,14 @@ class ServiceProviderController extends AbstractController
     #[Route('/service-provider/route', name: 'app_service_provider_route', methods: ['POST'])]
     public function route(
         #[MapRequestPayload] RouteRequestDto $routeRequestDto,
-        ServiceProviderRoutePlanner $serviceProviderRoutePlanner,
+        RoutePlanner $routePlanner,
         EntityManagerInterface $entityManager,
     ): Response {
         $serviceProvider = $entityManager->find(ServiceProvider::class, $routeRequestDto->serviceProviderId);
         if (null === $serviceProvider) {
             throw $this->createNotFoundException(\sprintf('ServiceProvider with id %d was not found.', $routeRequestDto->serviceProviderId));
         }
-        return $this->json(['route' => $serviceProviderRoutePlanner->planRouteFromAddresses($serviceProvider->getRouteAddresses($routeRequestDto->date ?? new \DateTime()))]);
+        return $this->json(['route' => $routePlanner->planRouteForDate($serviceProvider, $routeRequestDto->date ?? new \DateTimeImmutable())]);
     }
 
     #[Route('/service-provider/{id}/', name: 'app_service_provider_show', methods: ['GET'])]
