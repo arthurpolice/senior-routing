@@ -11,6 +11,12 @@
                     <h1 class="mt-2 text-3xl font-semibold text-slate-900">{{ client.name }}</h1>
                     <p class="mt-1 text-sm text-slate-500">Profile overview and delivery availability.</p>
                 </div>
+                <div class="flex gap-3">
+                    <a href="{{ path('app_client_orders', { id: client.id }) }}"
+                       class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+                        View orders
+                    </a>
+                </div>
             </header>
 
             <div class="grid gap-10 lg:grid-cols-2">

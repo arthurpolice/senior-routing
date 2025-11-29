@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: ServiceProviderRepository::class)]
+#[ORM\Table(name: 'orders')]
 class Order
 {
     #[ORM\Id]
@@ -73,6 +74,30 @@ class Order
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getOrderSize(): ?int
+    {
+        return $this->orderSize;
+    }
+
+    public function setOrderSize(int $orderSize): self
+    {
+        $this->orderSize = $orderSize;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

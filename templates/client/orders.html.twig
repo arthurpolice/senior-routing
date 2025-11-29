@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders for {{ client.name }}{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-slate-100 py-16">
+        <section class="mx-auto w-full max-w-5xl rounded-2xl bg-white p-10 shadow-xl ring-1 ring-slate-200">
+            <header class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm uppercase tracking-[0.3em] text-slate-400">Client orders</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">{{ client.name }}</h1>
+                    <p class="mt-1 text-sm text-slate-500">Overview of every scheduled and past delivery.</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ path('app_client_show', { id: client.id }) }}"
+                       class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        ← Back to client
+                    </a>
+                    <a href="{{ path('app_client_orders_new', { id: client.id }) }}"
+                       class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+                        + New order
+                    </a>
+                </div>
+            </header>
+
+            {% set orders = client.orders %}
+            {% if orders|length %}
+                <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                        <thead class="bg-slate-50 text-xs uppercase tracking-[0.3em] text-slate-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 font-semibold">Order</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Service provider</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Delivery date</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Order size</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Created</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                        {% for order in orders %}
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-semibold text-slate-900">#{{ order.id }}</td>
+                                <td class="px-6 py-4">
+                                    {% if order.serviceProvider %}
+                                        <div class="font-medium text-slate-900">{{ order.serviceProvider.name }}</div>
+                                        <div class="text-xs text-slate-500">{{ order.serviceProvider.city }}, {{ order.serviceProvider.country }}</div>
+                                    {% else %}
+                                        <span class="text-xs uppercase tracking-[0.3em] text-slate-400">Unassigned</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {% if order.date %}
+                                        <span class="font-medium text-slate-900">{{ order.date|date('M d, Y') }}</span>
+                                        <span class="ml-2 text-xs text-slate-400">{{ order.date|date('H:i') }}</span>
+                                    {% else %}
+                                        <span class="text-xs uppercase tracking-[0.3em] text-slate-400">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {% if order.orderSize is not null %}
+                                        <span class="font-semibold text-slate-900">{{ order.orderSize }}</span>
+                                    {% else %}
+                                        <span class="text-xs uppercase tracking-[0.3em] text-slate-400">n/a</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 text-slate-500">
+                                    {% if order.createdAt %}
+                                        {{ order.createdAt|date('M d, Y H:i') }}
+                                    {% else %}
+                                        <span class="text-xs uppercase tracking-[0.3em] text-slate-400">n/a</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center text-slate-500">
+                    <p class="text-lg font-semibold text-slate-700">No orders yet</p>
+                    <p class="mt-2 text-sm">Create the first order for {{ client.name }} to see it listed here.</p>
+                    <a href="{{ path('app_client_orders_new', { id: client.id }) }}"
+                       class="mt-6 inline-flex items-center rounded-xl bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+                        Create order
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+{% endblock %}
+

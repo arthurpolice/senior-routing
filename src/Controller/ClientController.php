@@ -49,4 +49,24 @@ class ClientController extends AbstractController
 
         return $this->render('client/show.html.twig', ['client' => $client]);
     }
+
+    #[Route('/client/{id}/orders', name: 'app_client_orders', methods: ['GET'])]
+    public function orders(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $client = $entityManager->find(Client::class, $id);
+        if (null === $client) {
+            throw $this->createNotFoundException(\sprintf('Client with id %d was not found.', $id));
+        }
+        return $this->render('client/orders.html.twig', ['client' => $client]);
+    }
+
+    #[Route('/client/{id}/orders/new', name: 'app_client_orders_new', methods: ['GET', 'POST'])]
+    public function newOrder(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $client = $entityManager->find(Client::class, $id);
+        if (null === $client) {
+            throw $this->createNotFoundException(\sprintf('Client with id %d was not found.', $id));
+        }
+        return $this->render('client/new_order_form.html.twig', ['client' => $client]);
+    }
 }
