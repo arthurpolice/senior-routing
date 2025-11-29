@@ -67,6 +67,7 @@ class ClientController extends AbstractController
         if (null === $client) {
             throw $this->createNotFoundException(\sprintf('Client with id %d was not found.', $id));
         }
+        
         return $this->render('client/new_order_form.html.twig', ['client' => $client]);
     }
 }

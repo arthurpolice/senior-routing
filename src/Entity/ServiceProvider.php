@@ -21,17 +21,17 @@ class ServiceProvider
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $name;
 
-    #[ORM\Column(length: 255)]
-    private ?string $city = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $city;
 
-    #[ORM\Column(length: 255)]
-    private ?string $country = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $country;
 
-    #[ORM\Column(length: 255)]
-    private ?string $address = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $address;
 
     #[ORM\ManyToMany(targetEntity: Client::class, mappedBy: 'serviceProviders')]
     private Collection $clients;

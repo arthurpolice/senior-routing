@@ -1,0 +1,430 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Order for {{ client.name }}{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-amber-50 py-10 px-4">
+        <div class="mx-auto max-w-6xl" 
+             data-order-calendar
+             data-client-id="{{ client.id }}">
+            
+            {# Header #}
+            <header class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <a href="{{ path('app_client_orders', { id: client.id }) }}" 
+                           class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            Back to orders
+                        </a>
+                        <h1 class="text-3xl font-bold text-slate-900">Schedule Meals</h1>
+                        <p class="mt-1 text-slate-600">Select dates and meal times for <span class="font-semibold text-slate-800">{{ client.name }}</span></p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid lg:grid-cols-[1fr,320px] gap-6">
+                {# Calendar Section #}
+                <section class="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200/60 p-6 order-2 lg:order-1">
+                    {# Calendar Navigation #}
+                    <div class="flex items-center justify-between mb-6">
+                        <button type="button" 
+                                data-prev-month
+                                class="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-600 hover:text-slate-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <h2 class="text-xl font-bold text-slate-900" data-month-display>
+                            Loading...
+                        </h2>
+                        <button type="button" 
+                                data-next-month
+                                class="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-600 hover:text-slate-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    {# Legend #}
+                    <div class="flex flex-wrap items-center gap-4 mb-4 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded bg-amber-400"></span>
+                            <span class="text-slate-600">Lunch selected</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded bg-indigo-500"></span>
+                            <span class="text-slate-600">Dinner selected</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded border-2 border-amber-400 ring-2 ring-amber-200"></span>
+                            <span class="text-slate-600">Today</span>
+                        </div>
+                    </div>
+
+                    {# Calendar Grid #}
+                    <div data-calendar-target class="select-none">
+                        {# Calendar will be rendered here by JavaScript #}
+                    </div>
+                </section>
+
+                {# Order Configuration Panel #}
+                <aside class="order-1 lg:order-2">
+                    <form class="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200/60 p-6 sticky top-6">
+                        
+                        <h3 class="text-lg font-bold text-slate-900 mb-6">Order Details</h3>
+
+                        {# Service Provider Selection #}
+                        <div class="mb-5">
+                            <label for="serviceProvider" class="block text-sm font-semibold text-slate-700 mb-2">
+                                Service Provider
+                            </label>
+                            {% if client.serviceProviders|length > 0 %}
+                                <select id="serviceProvider" 
+                                        data-service-provider
+                                        class="w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm py-3 px-4"
+                                        required>
+                                    <option value="">Select a provider...</option>
+                                    {% for provider in client.serviceProviders %}
+                                        <option value="{{ provider.id }}">
+                                            {{ provider.name }} – {{ provider.city }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            {% else %}
+                                <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center">
+                                    <p class="text-sm text-slate-500">No service providers linked to this client.</p>
+                                    <a href="{{ path('app_client_show', { id: client.id }) }}" 
+                                       class="mt-2 inline-block text-sm text-emerald-600 hover:text-emerald-700 font-semibold">
+                                        Add providers →
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# Order Size #}
+                        <div class="mb-6">
+                            <label for="orderSize" class="block text-sm font-semibold text-slate-700 mb-2">
+                                Number of People
+                            </label>
+                            <div class="relative">
+                                <input type="number" 
+                                       id="orderSize"
+                                       data-order-size
+                                       min="1" 
+                                       value="1"
+                                       class="w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm py-3 px-4 pr-12"
+                                       required>
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">people</span>
+                            </div>
+                            <p class="mt-1.5 text-xs text-slate-500">This applies to all selected meals</p>
+                        </div>
+
+                        {# Selection Summary #}
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-slate-600">Selected meals</span>
+                                <span class="text-2xl font-bold text-slate-900" data-selected-count>0</span>
+                            </div>
+                            <button type="button" 
+                                    data-clear-selection
+                                    class="mt-2 text-xs text-slate-500 hover:text-slate-700 underline">
+                                Clear selection
+                            </button>
+                        </div>
+
+                        {# Submit Button #}
+                        {% if client.serviceProviders|length > 0 %}
+                            <button type="submit" 
+                                    data-submit-btn
+                                    disabled
+                                    class="w-full py-3 px-6 rounded-xl bg-emerald-600 text-white font-semibold text-sm 
+                                           hover:bg-emerald-500 disabled:bg-slate-300 disabled:cursor-not-allowed 
+                                           transition-all duration-200 flex items-center justify-center gap-2
+                                           shadow-lg shadow-emerald-200 disabled:shadow-none">
+                                <span>Create</span>
+                                <span data-selected-count>0</span>
+                                <span>orders</span>
+                            </button>
+                        {% else %}
+                            <button type="button" 
+                                    disabled
+                                    class="w-full py-3 px-6 rounded-xl bg-slate-300 text-slate-500 font-semibold text-sm cursor-not-allowed">
+                                Add providers first
+                            </button>
+                        {% endif %}
+                    </form>
+
+                    {# Info Box #}
+                    <div class="mt-4 bg-amber-50 rounded-xl p-4 border border-amber-200">
+                        <div class="flex gap-3">
+                            <span class="text-amber-500 text-xl">💡</span>
+                            <div>
+                                <p class="text-sm font-semibold text-amber-800">How it works</p>
+                                <p class="text-xs text-amber-700 mt-1">
+                                    Click on lunch or dinner slots to select them. 
+                                    Each selected slot creates one order. 
+                                    All orders share the same provider and meal count.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    (function() {
+        class OrderCalendar {
+            constructor(container) {
+                this.container = container;
+                this.clientId = parseInt(container.dataset.clientId, 10);
+                this.year = new Date().getFullYear();
+                this.month = new Date().getMonth();
+                this.selectedMeals = new Map();
+                
+                this.calendarEl = container.querySelector('[data-calendar-target]');
+                this.monthDisplayEl = container.querySelector('[data-month-display]');
+                this.selectedCountEls = container.querySelectorAll('[data-selected-count]');
+                this.submitBtn = container.querySelector('[data-submit-btn]');
+                this.orderSizeInput = container.querySelector('[data-order-size]');
+                this.serviceProviderSelect = container.querySelector('[data-service-provider]');
+                this.form = container.querySelector('form');
+                
+                this.bindEvents();
+                this.renderCalendar();
+            }
+
+            bindEvents() {
+                this.container.querySelector('[data-prev-month]')?.addEventListener('click', () => this.prevMonth());
+                this.container.querySelector('[data-next-month]')?.addEventListener('click', () => this.nextMonth());
+                this.container.querySelector('[data-clear-selection]')?.addEventListener('click', () => this.clearSelection());
+                this.form?.addEventListener('submit', (e) => this.submit(e));
+            }
+
+            renderCalendar() {
+                const year = this.year;
+                const month = this.month;
+                
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                  'July', 'August', 'September', 'October', 'November', 'December'];
+                if (this.monthDisplayEl) {
+                    this.monthDisplayEl.textContent = `${monthNames[month]} ${year}`;
+                }
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startingDay = firstDay.getDay();
+                const totalDays = lastDay.getDate();
+
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                
+                let html = `
+                    <div class="grid grid-cols-7 gap-1 mb-2">
+                        ${dayNames.map(day => `
+                            <div class="text-center text-xs font-bold uppercase tracking-wider text-slate-500 py-2">
+                                ${day}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="grid grid-cols-7 gap-1">
+                `;
+
+                for (let i = 0; i < startingDay; i++) {
+                    html += `<div class="min-h-[80px] bg-slate-50 rounded-lg opacity-40"></div>`;
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                for (let day = 1; day <= totalDays; day++) {
+                    const date = new Date(year, month, day);
+                    const dateStr = this.formatDate(date);
+                    const isPast = date < today;
+                    const isToday = date.getTime() === today.getTime();
+                    
+                    const lunchKey = `${dateStr}-lunch`;
+                    const dinnerKey = `${dateStr}-dinner`;
+                    const lunchSelected = this.selectedMeals.has(lunchKey);
+                    const dinnerSelected = this.selectedMeals.has(dinnerKey);
+
+                    html += `
+                        <div class="min-h-[80px] rounded-xl border ${isToday ? 'border-amber-400 ring-2 ring-amber-200' : 'border-slate-200'} ${isPast ? 'opacity-40 pointer-events-none' : ''} bg-white overflow-hidden flex flex-col">
+                            <div class="text-xs font-semibold text-slate-700 px-2 pt-1 pb-0.5 ${isToday ? 'bg-amber-50' : 'bg-slate-50'} border-b border-slate-100">
+                                ${day}
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <button type="button" 
+                                        data-date="${dateStr}"
+                                        data-meal="lunch"
+                                        ${isPast ? 'disabled' : ''}
+                                        class="meal-btn flex-1 flex items-center justify-center gap-1 text-xs font-medium transition-all duration-200 ${lunchSelected 
+                                            ? 'bg-amber-400 text-amber-950 shadow-inner' 
+                                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}">
+                                    <span class="text-sm">${lunchSelected ? '☀️' : '○'}</span>
+                                    <span class="hidden sm:inline">Lunch</span>
+                                </button>
+                                <button type="button" 
+                                        data-date="${dateStr}"
+                                        data-meal="dinner"
+                                        ${isPast ? 'disabled' : ''}
+                                        class="meal-btn flex-1 flex items-center justify-center gap-1 text-xs font-medium transition-all duration-200 ${dinnerSelected 
+                                            ? 'bg-indigo-500 text-white shadow-inner' 
+                                            : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">
+                                    <span class="text-sm">${dinnerSelected ? '🌙' : '○'}</span>
+                                    <span class="hidden sm:inline">Dinner</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const remainingCells = (7 - ((startingDay + totalDays) % 7)) % 7;
+                for (let i = 0; i < remainingCells; i++) {
+                    html += `<div class="min-h-[80px] bg-slate-50 rounded-lg opacity-40"></div>`;
+                }
+
+                html += '</div>';
+                
+                if (this.calendarEl) {
+                    this.calendarEl.innerHTML = html;
+                    this.calendarEl.querySelectorAll('.meal-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => this.toggleMeal(e));
+                    });
+                }
+                
+                this.updateSelectedCount();
+            }
+
+            toggleMeal(event) {
+                const date = event.currentTarget.dataset.date;
+                const meal = event.currentTarget.dataset.meal;
+                const key = `${date}-${meal}`;
+
+                if (this.selectedMeals.has(key)) {
+                    this.selectedMeals.delete(key);
+                } else {
+                    this.selectedMeals.set(key, { date, meal });
+                }
+
+                this.renderCalendar();
+            }
+
+            prevMonth() {
+                this.month--;
+                if (this.month < 0) {
+                    this.month = 11;
+                    this.year--;
+                }
+                this.renderCalendar();
+            }
+
+            nextMonth() {
+                this.month++;
+                if (this.month > 11) {
+                    this.month = 0;
+                    this.year++;
+                }
+                this.renderCalendar();
+            }
+
+            updateSelectedCount() {
+                const count = this.selectedMeals.size;
+                this.selectedCountEls.forEach(el => {
+                    el.textContent = count;
+                });
+                if (this.submitBtn) {
+                    this.submitBtn.disabled = count === 0;
+                }
+            }
+
+            formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            async submit(event) {
+                event.preventDefault();
+
+                const orderSize = parseInt(this.orderSizeInput?.value, 10);
+                const serviceProviderId = parseInt(this.serviceProviderSelect?.value, 10);
+
+                if (!orderSize || orderSize < 1) {
+                    alert('Please enter a valid number of people.');
+                    return;
+                }
+
+                if (!serviceProviderId) {
+                    alert('Please select a service provider.');
+                    return;
+                }
+
+                if (this.selectedMeals.size === 0) {
+                    alert('Please select at least one meal slot.');
+                    return;
+                }
+
+                const orders = [];
+                this.selectedMeals.forEach(({ date, meal }) => {
+                    orders.push({
+                        orderSize,
+                        date,
+                        clientId: this.clientId,
+                        serviceProviderId,
+                        mealType: meal
+                    });
+                });
+
+                this.submitBtn.disabled = true;
+                const originalHtml = this.submitBtn.innerHTML;
+                this.submitBtn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating orders...
+                `;
+
+                try {
+                    const response = await fetch('/api/orders/batch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ orders })
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'Failed to create orders');
+                    }
+
+                    window.location.href = `/client/${this.clientId}/orders`;
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                    this.submitBtn.disabled = false;
+                    this.submitBtn.innerHTML = originalHtml;
+                    this.updateSelectedCount();
+                }
+            }
+
+            clearSelection() {
+                this.selectedMeals.clear();
+                this.renderCalendar();
+            }
+        }
+
+        // Initialize immediately since we're at the end of the body
+        const container = document.querySelector('[data-order-calendar]');
+        if (container) {
+            new OrderCalendar(container);
+        }
+    })();
+    </script>
+{% endblock %}

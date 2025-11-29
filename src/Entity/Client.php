@@ -17,20 +17,20 @@ class Client
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $name;
 
     #[ORM\Column(type: Types::JSON)]
     private array $schedule = [];
 
-    #[ORM\Column(length: 255)]
-    private ?string $address = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $address;
 
-    #[ORM\Column(length: 255)]
-    private ?string $city = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $city;
 
-    #[ORM\Column(length: 255)]
-    private ?string $country = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $country;
 
     /** @var Collection<int, ServiceProvider> */
     #[ORM\ManyToMany(targetEntity: ServiceProvider::class, inversedBy: 'clients')]

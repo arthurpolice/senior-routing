@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\RoutePlanner;
+namespace App\Service\Routes;
 
 use App\Entity\ServiceProvider;
 use App\Service\DeliveriesFetcher\DeliveriesFetcher;

@@ -32,6 +32,7 @@
                             <th scope="col" class="px-6 py-4 font-semibold">Order</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Service provider</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Delivery date</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Meal</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Order size</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Created</th>
                         </tr>
@@ -51,9 +52,23 @@
                                 <td class="px-6 py-4">
                                     {% if order.date %}
                                         <span class="font-medium text-slate-900">{{ order.date|date('M d, Y') }}</span>
-                                        <span class="ml-2 text-xs text-slate-400">{{ order.date|date('H:i') }}</span>
                                     {% else %}
                                         <span class="text-xs uppercase tracking-[0.3em] text-slate-400">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {% if order.mealType %}
+                                        {% if order.mealType.value == 'lunch' %}
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                                                <span>☀️</span> Lunch
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
+                                                <span>🌙</span> Dinner
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-xs uppercase tracking-[0.3em] text-slate-400">n/a</span>
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4">

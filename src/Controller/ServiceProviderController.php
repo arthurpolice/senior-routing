@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ServiceProvider;
 use App\Form\NewServiceProviderFormType;
-use App\Service\RoutePlanner\RoutePlanner;
+use App\Service\Routes\RoutePlanner;
 use App\Dto\RouteRequestDto;
 
 class ServiceProviderController extends AbstractController

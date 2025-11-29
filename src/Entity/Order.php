@@ -2,35 +2,39 @@
 
 namespace App\Entity;
 
-use App\Repository\ServiceProviderRepository;
+use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use App\Enum\MealTypes;
 
-#[ORM\Entity(repositoryClass: ServiceProviderRepository::class)]
+#[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: 'orders')]
 class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\ManyToOne(targetEntity: Client::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Client $client = null;
+    private Client $client;
 
     #[ORM\ManyToOne(targetEntity: ServiceProvider::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?ServiceProvider $serviceProvider = null;
+    private ServiceProvider $serviceProvider;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    private \DateTimeInterface $date;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private ?int $orderSize = null;
+    private int $orderSize;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
+    private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(enumType: MealTypes::class, nullable: false)]
+    private MealTypes $mealType;
 
     public function __construct()
     {
@@ -98,6 +102,18 @@ class Order
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getMealType(): ?MealTypes
+    {
+        return $this->mealType;
+    }
+
+    public function setMealType(MealTypes $mealType): self
+    {
+        $this->mealType = $mealType;
 
         return $this;
     }
