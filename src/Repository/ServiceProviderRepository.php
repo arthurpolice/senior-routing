@@ -19,13 +19,13 @@ class ServiceProviderRepository extends ServiceEntityRepository
     public function findDeliveriesWithClientsForDate(
         ServiceProvider $provider,
         \DateTimeImmutable $date,
-        int $windowDays = 2
+        int $windowDays
     ): array {
         $windowStart = (clone $date)->setTime(0, 0);
         $windowEnd   = (clone $date)->modify(\sprintf('+%d day', $windowDays))->setTime(23, 59, 59);
     
         return $this->createQueryBuilder('sp')
-            ->select('o', 'client')
+            ->select('sp', 'o', 'client')
             ->join('sp.orders', 'o')
             ->join('o.client', 'client')
             ->andWhere('sp = :provider')

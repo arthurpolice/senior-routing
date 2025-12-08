@@ -65,4 +65,24 @@ class ServiceProviderController extends AbstractController
         }
         return $this->render('service_provider/show.html.twig', ['serviceProvider' => $serviceProvider]);
     }
+
+    #[Route('/service-provider/{id}/orders', name: 'app_service_provider_orders', methods: ['GET'])]
+    public function orders(int $id, EntityManagerInterface $entityManager): Response {
+        $serviceProvider = $entityManager->find(ServiceProvider::class, $id);
+        if (null === $serviceProvider) {
+            throw $this->createNotFoundException(\sprintf('ServiceProvider with id %d was not found.', $id));
+        }
+        $orders = $serviceProvider->getOrders();
+        return $this->render('service_provider/orders.html.twig', ['serviceProvider' => $serviceProvider, 'orders' => $orders]);
+    }
+
+    #[Route('/service-provider/{id}/route', name: 'app_service_provider_route_show', methods: ['GET'])]
+    public function routeShow(int $id, EntityManagerInterface $entityManager, RoutePlanner $routePlanner): Response {
+        $serviceProvider = $entityManager->find(ServiceProvider::class, $id);
+        if (null === $serviceProvider) {
+            throw $this->createNotFoundException(\sprintf('ServiceProvider with id %d was not found.', $id));
+        }
+        $route = $routePlanner->planRouteForDate($serviceProvider, new \DateTimeImmutable());
+        return $this->render('service_provider/route_show.html.twig', ['serviceProvider' => $serviceProvider, 'route' => $route]);
+    }
 }

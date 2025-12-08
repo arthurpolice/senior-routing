@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ serviceProvider.name ?? 'Service Provider' }} Orders{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-slate-100 py-16">
+        <section class="mx-auto w-full max-w-6xl rounded-2xl bg-white p-10 shadow-xl ring-1 ring-slate-200">
+            {% set sortedOrders = orders|sort(
+                (a, b) => a.date < b.date ? 1 : (a.date > b.date ? -1 : 0)
+            ) %}
+            {% set clientIds = [] %}
+            {% for order in sortedOrders %}
+                {% set clientIds = order.client.id in clientIds ? clientIds : clientIds|merge([order.client.id]) %}
+            {% endfor %}
+            {% set clientsServed = clientIds %}
+            {% set latest = sortedOrders|length ? sortedOrders|first : null %}
+
+            <header class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm uppercase tracking-[0.3em] text-slate-400">Service Provider</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">
+                        {{ serviceProvider.name ?? 'Unnamed provider' }}
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-500">ID #{{ serviceProvider.id }}</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <a
+                        href="{{ path('app_service_provider_show', { id: serviceProvider.id }) }}"
+                        class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                    >
+                        ← Provider details
+                    </a>
+                    <a
+                        href="{{ path('app_service_provider') }}"
+                        class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                    >
+                        Back to list
+                    </a>
+                </div>
+            </header>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                <div class="rounded-2xl border border-slate-200 p-6 shadow-sm md:col-span-2">
+                    <h2 class="text-lg font-semibold text-slate-900">Orders overview</h2>
+                    <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3 text-sm text-slate-600">
+                        <div class="rounded-xl border border-slate-100 p-4">
+                            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Total orders</dt>
+                            <dd class="mt-2 text-2xl font-semibold text-slate-900">{{ orders|length }}</dd>
+                        </div>
+                        <div class="rounded-xl border border-slate-100 p-4">
+                            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Clients served</dt>
+                            <dd class="mt-2 text-2xl font-semibold text-slate-900">{{ clientsServed|length }}</dd>
+                        </div>
+                        <div class="rounded-xl border border-slate-100 p-4">
+                            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Latest order</dt>
+                            <dd class="mt-2 text-sm text-slate-900">{{ latest ? latest.date|date('Y-m-d H:i') : '—' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-900">Contact</h2>
+                    <p class="mt-2 text-sm text-slate-700">{{ serviceProvider.address ?? '—' }}</p>
+                    <p class="text-sm text-slate-500">{{ serviceProvider.city ?? '—' }}, {{ serviceProvider.country ?? '—' }}</p>
+                </div>
+            </div>
+
+            <section class="mt-12">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.3em] text-slate-400">Orders</p>
+                        <h2 class="mt-2 text-2xl font-semibold text-slate-900">Orders for this provider</h2>
+                    </div>
+                </div>
+
+                {% if sortedOrders is empty %}
+                    <p class="mt-6 rounded-xl border border-dashed border-slate-300 px-6 py-10 text-center text-slate-500">
+                        No orders have been placed for this provider yet.
+                    </p>
+                {% else %}
+                    <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-700">
+                            <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                                <tr>
+                                    <th class="px-6 py-3">Order #</th>
+                                    <th class="px-6 py-3">Client</th>
+                                    <th class="px-6 py-3">Meal type</th>
+                                    <th class="px-6 py-3">Order size</th>
+                                    <th class="px-6 py-3">Scheduled for</th>
+                                    <th class="px-6 py-3">Created at</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                {% for order in sortedOrders %}
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium text-slate-900">#{{ order.id }}</td>
+                                        <td class="px-6 py-4 text-slate-700">
+                                            {{ order.client.name ?? 'Unknown client' }}<br>
+                                            <span class="text-xs text-slate-400">ID {{ order.client.id }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-700">
+                                            {{ order.mealType ? order.mealType.value|capitalize : '—' }}
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-700">{{ order.orderSize ?? '—' }}</td>
+                                        <td class="px-6 py-4 text-slate-700">
+                                            {{ order.date ? order.date|date('Y-m-d H:i') : '—' }}
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-700">
+                                            {{ order.createdAt ? order.createdAt|date('Y-m-d H:i') : '—' }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </section>
+        </section>
+    </main>
+{% endblock %}
