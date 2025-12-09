@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Order;
 
 class ClientController extends AbstractController
 {
@@ -69,5 +70,21 @@ class ClientController extends AbstractController
         }
         
         return $this->render('client/new_order_form.html.twig', ['client' => $client]);
+    }
+
+    #[Route('/client/{id}/orders/{orderId}/remove', name: 'app_client_orders_remove', methods: ['POST'])]
+    public function removeOrder(int $id, int $orderId, EntityManagerInterface $entityManager): Response
+    {
+        $client = $entityManager->find(Client::class, $id);
+        if (null === $client) {
+            throw $this->createNotFoundException(\sprintf('Client with id %d was not found.', $id));
+        }
+        $order = $entityManager->find(Order::class, $orderId);
+        if (null === $order) {
+            throw $this->createNotFoundException(\sprintf('Order with id %d was not found.', $orderId));
+        }
+        $entityManager->remove($order);
+        $entityManager->flush();
+        return $this->redirectToRoute('app_client_orders', ['id' => $id]);
     }
 }

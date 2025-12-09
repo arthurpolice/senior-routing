@@ -13,12 +13,20 @@
                     </h1>
                     <p class="mt-1 text-sm text-slate-500">ID #{{ serviceProvider.id }}</p>
                 </div>
-                <a
-                    href="{{ path('app_service_provider') }}"
-                    class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-5 py-3 text-base font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
-                >
-                    ← Back to list
-                </a>
+                <div class="flex flex-wrap gap-3">
+                    <a
+                        href="{{ path('app_service_provider_route_show', { id: serviceProvider.id }) }}"
+                        class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                    >
+                        View today’s routes
+                    </a>
+                    <a
+                        href="{{ path('app_service_provider') }}"
+                        class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-5 py-3 text-base font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                    >
+                        ← Back to list
+                    </a>
+                </div>
             </header>
 
             <div class="grid gap-6 md:grid-cols-3">

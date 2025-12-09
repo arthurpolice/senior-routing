@@ -17,7 +17,6 @@ class GoogleRoutes
 
     public function getRoutes(array $addresses, string $serviceProviderFullAddress): array
     {
-        $addresses = array_values(array_unique($addresses, SORT_STRING));
         $body = [
             'intermediates' => array_map(static fn(string $address) => ['address' => $address], $addresses),
             'origin' => ['address' => $serviceProviderFullAddress],
@@ -37,8 +36,12 @@ class GoogleRoutes
             ];
             $response = $this->httpClient->request('POST', 'https://routes.googleapis.com/directions/v2:computeRoutes', $opts);
             $optimalOrderOfAddresses = $response->toArray()['routes'][0]['optimizedIntermediateWaypointIndex'];
-            $orderedAddresses = array_map(static fn(int $index) => $addresses[$index], $optimalOrderOfAddresses);
-            return $response->toArray();
+            $orderedAddresses = \count($addresses) === 1 ? $addresses : array_map(static fn(int $index) => $addresses[$index], $optimalOrderOfAddresses);
+            $routeDurationString = $response->toArray()['routes'][0]['duration'];
+            return [
+                'orderedAddresses' => $orderedAddresses,
+                'routeDurationInSeconds' => \intval(rtrim($routeDurationString, 's')),
+            ];
         } catch (TransportExceptionInterface $e) {
             throw new \RuntimeException('Failed to get routes from Google: ' . $e->getMessage());
         }
